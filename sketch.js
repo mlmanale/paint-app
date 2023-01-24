@@ -1,5 +1,5 @@
-var paintColor;
-var pBox;
+let paintColor;
+let pBox;
 
 function setup() {
   createCanvas(windowHeight, windowWidth);
