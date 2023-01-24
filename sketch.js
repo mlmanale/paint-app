@@ -2,10 +2,10 @@ let paintColor;
 let pBox;
 
 function setup() {
-  createCanvas(windowHeight, windowWidth);
+  createCanvas(windowWidth, windowHeight);
   colorMode(HSB);
   background(11, 0, 96);
-  paintColor = color(50);
+  paintColor = color(11, 0, 96);
   pBox = 20; //box size
 }
 
