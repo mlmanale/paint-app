@@ -1,5 +1,6 @@
 let paintColor;
 let pBox;
+let bStroke = 5;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -7,6 +8,9 @@ function setup() {
   background(11, 0, 96);
   paintColor = color(11, 0, 96);
   pBox = 20; //box size
+  button = createButton('Clear canvas');
+  button.position(0, 280);
+  button.mousePressed(clearBG);
 }
 
 function draw() {
@@ -44,9 +48,17 @@ function draw() {
       else if(mouseY <= (10*pBox)){
         paintColor = color(0,0,0); //black
       }
+      else if(mouseY <= (240) && mouseY>= 225) {
+        bStroke += 0.5;
+        //console.log(bStroke);
+      }
+      else if(mouseY <= 275 && mouseY >= 260) {
+        bStroke -= 0.5;
+        //console.log(bStroke);
+      }
     }
     stroke(paintColor);
-    strokeWeight(5);
+    strokeWeight(bStroke);
     line(mouseX, mouseY, pmouseX, pmouseY);
   }
   
@@ -74,5 +86,21 @@ function draw() {
   rect(0,8*pBox,pBox);
   fill(0,0,0); //black
   rect(0,9*pBox,pBox);
+
+  
+  fill('black');
+  noStroke();
+  text('Bigger brush', 25, 235)
+  circle(10, 260, 10);
+  text('Smaller brush', 20, 265)
+  circle(12, 230, 20);
+
+  
 }
 
+function clearBG() {
+  clear();
+  background(11, 0, 96);
+  bStroke = 5;
+
+}
