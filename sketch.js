@@ -9,16 +9,16 @@ function setup() {
   background(11, 0, 96);
   paintColor = color(11, 0, 96);
   pBox = 20; //box size
-  // slider = createSlider(0.1, 1.0, 0.1);
-  // slider.position(5, 275);
-  // slider.style('width', '80px');
+  slider = createSlider(0.1, 1.0, 0.1);
+  slider.position(5, 275);
+  slider.style('width', '80px');
   button = createButton('Clear canvas');
   button.position(0, 350);
   button.mousePressed(clearBG);
 }
 
 function draw() {
-  //let pOpaque = slider.value();
+  let pOpaque = slider.value();
   pOpaque = 1;
   //mouse clicks for palette
   if (mouseIsPressed) {
