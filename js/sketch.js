@@ -1,7 +1,12 @@
+let port;
+let writer;
+let reader;
 let paintColor;
 let pBox;
 let bStroke = 5;
 let pshift = 1;
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
 const sounds = new Tone.Players({
   "splat": "sounds/paintsplat.mp3",
   "erase": "sounds/crumple.mp3",
@@ -28,6 +33,50 @@ effect8 = new Tone.PitchShift(6).toDestination();
 player8 = new Tone.Player("sounds/paintsplat.mp3").connect(effect8);
 effect9 = new Tone.PitchShift(8).toDestination();
 player9 = new Tone.Player("sounds/paintsplat.mp3").connect(effect9);
+
+class LineBreakTransformer {
+  constructor() {
+    // A container for holding stream data until a new line.
+    this.chunks = "";
+  }
+
+  transform(chunk, controller) {
+    // Append new chunks to existing chunks.
+    this.chunks += chunk;
+    // For each line breaks in chunks, send the parsed lines out.
+    const lines = this.chunks.split("\n");
+    this.chunks = lines.pop();
+    lines.forEach((line) => controller.enqueue(line));
+  }
+
+  flush(controller) {
+    // When the stream is closed, flush any remaining chunks out.
+    controller.enqueue(this.chunks);
+  }
+}
+
+class Cursor {
+  constructor () {
+    this.x = 200;
+    this.y = 200;
+  }
+
+  draw() {
+    push();
+      noFill();
+      stroke("black");
+      strokeWeight(2);
+      circle(this.x, this.y, bStroke);
+      //console.log("hi");
+    pop();
+  }
+
+  render() {
+    
+  }
+}
+
+const cursor = new Cursor();
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -84,7 +133,12 @@ function draw() {
   circle(10, 260, 10);
   text('Smaller brush', 20, 265)
   circle(12, 230, 20);
+
+  cursor.draw();
   
+  if (reader) {
+    serialRead();
+  }
 }
 
 function clearBG() {
@@ -147,5 +201,33 @@ function mousePressed() {
       sounds.player("small").start();
     }
   }
+}
+
+async function serialRead() {
+  while(true) {
+    const { value, done } = await reader.read();
+    if (done) {
+      reader.releaseLock();
+      break;
+    }
+    console.log(value);
+
+    if(value.includes("green")) {
+      color = "green";
+    }
+    else if(value.includes("red")) {
+      color = "red";
+    }
+  }
+}
+async function connect() {
+  port = await navigator.serial.requestPort();
+  await port.open({baudRate: 9600});
+  writer = port.writable.getWriter();
+  reader = port.readable
+  .pipeThrough(new TextDecoderStream())
+  .pipeThrough(new TransformStream(new LineBreakTransformer()))
+  .getReader();
+
 }
 
